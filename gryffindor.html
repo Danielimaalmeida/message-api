@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Jinxs</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <h2>Gryffindor Spells</h2>
+    <button type="button" class="m-2 btn btn-primary" onclick="fetchJinxs()">Get Jinxs</button>
+    <button type="button" class="m-2 btn btn-warning" onclick="handleClick()">Get a Spell</button>
+    <ul id="list" class="list-group">
+        <li class="list-group-item">An item</li>
+    </ul>
+    <script type="application/javascript" src="./messaging.js"></script>
+    <script>
+        let client;
+        let jinxs = [];
+
+        async function fetchJinxs() {
+            jinxs = await client.callApiFunction('fetchExternalApi', { url: 'https://wizard-world-api.herokuapp.com/Spells?Type=DarkArts' });
+            jinxs.forEach(jinx => {
+                const row = document.createElement('li');
+                row.classList = "list-group-item"
+                row.innerText = jinx.name
+                document.getElementById('list').appendChild(row)
+            })
+        }
+
+        async function handleClick() {
+            const spell = await client.callApiFunction('delegateToChild', { fn: 'getOneSpell', connectionId: 'slytherinConnection' });
+            console.log(spell)
+            const row = document.createElement('li');
+            row.classList = "list-group-item"
+            row.innerText = spell.name
+            document.getElementById('list').appendChild(row)
+        }
+
+        function getOneJinx() {
+            return jinxs[0]
+        }
+
+        async function init() {
+            client = await host.getClient();
+            client.registerFunction('getOneJinx', getOneJinx)
+        }
+        init();
+    </script>
+</body>
+
+</html>

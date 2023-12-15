@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Spells</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+    <h2>Slytherin Spells</h2>
+    <button type="button" class="m-2 btn btn-info" onclick="fetchSpells()">Get Spells</button>
+    <button type="button" class="m-2 btn btn-warning" onclick="handleClick()">Get a Jinx</button>
+    <ul id="list" class="list-group">
+        <li class="list-group-item">An item</li>
+    </ul>
+    <script type="application/javascript" src="./messaging.js"></script>
+    <script>
+        let client;
+        let spells = [];
+
+        async function fetchSpells() {
+            spells = await client.callApiFunction('fetchExternalApi', { url: 'https://wizard-world-api.herokuapp.com/Spells?Type=Spell' });
+            spells.forEach(spell => {
+                const row = document.createElement('li');
+                row.classList = "list-group-item"
+                row.innerText = spell.name
+                document.getElementById('list').appendChild(row)
+            })
+        }
+
+        async function handleClick() {
+            const jinx = await client.callApiFunction('delegateToChild', { fn: 'getOneJinx', connectionId: 'gryffindorConnection' });
+            const row = document.createElement('li');
+            row.classList = "list-group-item"
+            row.innerText = jinx.name
+            document.getElementById('list').appendChild(row)
+        }
+
+        function getOneSpell() {
+            return spells[0];
+        }
+
+        async function init() {
+            client = await host.getClient();
+            client.registerFunction('getOneSpell', getOneSpell);
+        }
+        init();
+    </script>
+</body>
+
+</html>
